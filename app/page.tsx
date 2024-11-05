@@ -1,101 +1,161 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { useState, useEffect, useRef } from 'react'
+import { Input } from './components/ui/input'
+import { Button } from './components/ui/button'
+import { submitEmail, submitTestResult, fetchSampleText } from './actions' // Import the new fetchSampleText function
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './components/ui/card'
+import { motion } from 'framer-motion'
+
+export default function SpeedTypingTest() {
+  const [email, setEmail] = useState<string>('')
+  const [sampleText, setSampleText] = useState<string>('')
+  const [inputText, setInputText] = useState<string>('')
+  const [timeElapsed, setTimeElapsed] = useState<number>(0)
+  const [testStarted, setTestStarted] = useState<boolean>(false)
+  const [testFinished, setTestFinished] = useState<boolean>(false)
+  const [wpm, setWpm] = useState<number>(0)
+  const [errors, setErrors] = useState<number>(0)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+
+  useEffect(() => {
+    if (testStarted && !testFinished) {
+      intervalRef.current = setInterval(() => {
+        setTimeElapsed((prevTime) => prevTime + 1)
+      }, 1000)
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
+    }
+  }, [testStarted, testFinished])
+
+  const startTest = async () => {
+    const newText = await fetchSampleText()
+    setSampleText(newText)
+    setTestStarted(true)
+    setTestFinished(false)
+    setTimeElapsed(0)
+    setInputText('')
+    setErrors(0)
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setInputText(value)
+
+    const correctText = sampleText.slice(0, value.length)
+    if (value === sampleText) {
+      endTest()
+    } else if (value !== correctText) {
+      setErrors((prevErrors) => prevErrors + 1)
+    }
+  }
+
+  const endTest = async () => {
+    setTestFinished(true)
+    if (intervalRef.current) clearInterval(intervalRef.current)
+
+    const minutes = timeElapsed / 60
+    const wordsTyped = inputText.trim().split(/\s+/).length
+    const calculatedWpm = Math.round(wordsTyped / minutes)
+    setWpm(calculatedWpm)
+
+    await submitTestResult(email, calculatedWpm)
+  }
+
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    await submitEmail(email)
+    startTest()
+  }
+
+  const getCharacterStyle = (index: number) => {
+    if (index < inputText.length) {
+      return inputText[index] === sampleText[index] ? 'text-green-600' : 'text-red-600'
+    }
+    return ''
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Card className="w-full max-w-2xl mx-auto p-6 bg-gradient-to-br from-purple-50 to-indigo-50 text-gray-800 shadow-lg rounded-lg">
+        <CardHeader>
+          <CardTitle className="text-3xl font-bold text-indigo-700">Speed Typing Test</CardTitle>
+          <CardDescription className="text-lg text-indigo-600">Test your typing speed and accuracy!</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleEmailSubmit} className="mb-6">
+            <div className="flex items-center space-x-2">
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="bg-white border-2 border-indigo-300 text-indigo-900 placeholder-indigo-400 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+              <Button type="submit" className="bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300">
+                Submit Email
+              </Button>
+            </div>
+          </form>
+          <div className="mb-6">
+            <p className="font-semibold text-indigo-900 mb-2">Sample Text:</p>
+            <p className="text-indigo-800 bg-white p-4 rounded-lg shadow-inner">
+              {sampleText.split('').map((char, index) => (
+                <span key={index} className={getCharacterStyle(index)}>
+                  {char}
+                </span>
+              ))}
+            </p>
+          </div>
+          {!testStarted ? (
+            <Button 
+              onClick={startTest} 
+              disabled={!email} 
+              className="w-full bg-indigo-600 text-white hover:bg-indigo-700 disabled:bg-indigo-300 disabled:text-indigo-100 focus:ring-4 focus:ring-indigo-300"
+            >
+              Start Test
+            </Button>
+          ) : (
+            <div>
+              <Input
+                value={inputText}
+                onChange={handleInputChange}
+                placeholder="Start typing here..."
+                disabled={testFinished}
+                className="mt-4 bg-white border-2 border-indigo-300 text-indigo-900 placeholder-indigo-400 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+              <div className="mt-4 flex justify-between text-indigo-700">
+                <p>Time: {timeElapsed} seconds</p>
+                <p>Errors: {errors}</p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+        <CardFooter>
+          {testFinished && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="w-full text-center"
+            >
+              <p className="text-2xl font-bold text-indigo-700 mb-2">Test completed!</p>
+              <p className="text-xl text-indigo-600">Your typing speed: {wpm} WPM</p>
+              <p className="text-lg text-indigo-600">Errors: {errors}</p>
+            </motion.div>
+          )}
+        </CardFooter>
+      </Card>
+    </motion.div>
+  )
 }
