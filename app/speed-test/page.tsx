@@ -17,15 +17,52 @@ import Link from 'next/link'
 import { Button } from '../components/ui/button'
 import { Card, CardDescription, CardTitle } from '../components/ui/card'
 
+interface TypingTest {
+  paragraph: string;
+  level: number;
+  testTime: number;
+  companyId: number;
+  jobAssignmentId: number;
+  passCriteria: string;
+  id: number;
+}
+
+interface TestResult {
+  wordsPerMinute: number
+  consumedTime: number
+  accuracy: number
+  keyStrokesPerMinute: number
+  countOfWrongLetters: number
+  urlRootParameterGuid: string
+  isDeleted: boolean
+}
+
 export default function Component() {
     const [stage, setStage] = useState<'welcome' | 'test' | 'complete'>('welcome')
     const [timeLeft, setTimeLeft] = useState(60)
     const [text, setText] = useState('')
-    const [sampleText] = useState(
-      "One of the most rewarding experiences in life is learning something new. Whether it's picking up a new skill, exploring a new place, or meeting someone with a unique perspective, these moments expand our horizons and deepen our understanding of the world."
-    )
+    const [sampleText, setSampleText] = useState('')
     const timerRef = useRef<NodeJS.Timeout>()
     const inputRef = useRef<HTMLInputElement>(null)
+    const [testResult, setTestResult] = useState<TestResult | null>(null)
+  
+    useEffect(() => {
+        const fetchParagraph = async () => {
+            try {
+                const response = await fetch('https://demo.nancy-ai.com/api/seera/typing-tests')
+                const data: TypingTest[] = await response.json()
+                if (data && data.length > 0) {
+                    setSampleText(data[0].paragraph)
+                    setTimeLeft(data[0].testTime)
+                }
+            } catch (error) {
+                console.error('Error fetching paragraph:', error)
+                setSampleText("One of the most rewarding experiences in life is learning something new.")
+            }
+        }
+
+        fetchParagraph()
+    }, [])
   
     useEffect(() => {
       if (stage === 'test' && timeLeft > 0) {
@@ -34,6 +71,8 @@ export default function Component() {
             if (prev <= 1) {
               setStage('complete')
               clearInterval(timerRef.current)
+              const results = calculateTestResults()
+              submitTestResults(results)
               return 0
             }
             return prev - 1
@@ -75,6 +114,67 @@ export default function Component() {
   
     const handleCopy = (e: React.ClipboardEvent) => {
       e.preventDefault()
+    }
+  
+    const calculateTestResults = () => {
+      // Calculate words per minute
+      const words = text.trim().split(/\s+/).length
+      const minutes = (60 - timeLeft) / 60
+      const wpm = Math.round(words / minutes)
+
+      // Calculate accuracy and wrong letters
+      let correctChars = 0
+      let wrongLetters = 0
+      
+      text.split('').forEach((char, index) => {
+        if (char === sampleText[index]) {
+          correctChars++
+        } else {
+          wrongLetters++
+        }
+      })
+
+      const accuracy = text.length > 0 
+        ? Math.round((correctChars / text.length) * 100 * 10) / 10
+        : 0
+
+      // Calculate keystrokes per minute (including spaces and wrong letters)
+      const totalKeystrokes = text.length
+      const keyStrokesPerMinute = Math.round(totalKeystrokes / minutes)
+
+      const result: TestResult = {
+        wordsPerMinute: wpm,
+        consumedTime: 60 - timeLeft, // time spent in seconds
+        accuracy: accuracy,
+        keyStrokesPerMinute: keyStrokesPerMinute,
+        countOfWrongLetters: wrongLetters,
+        urlRootParameterGuid: "b6916191-6025-434c-82da-4e77c6b98b34",
+        isDeleted: false
+      }
+
+      setTestResult(result)
+      return result
+    }
+  
+    const submitTestResults = async (results: TestResult) => {
+      try {
+        const response = await fetch('https://demo.nancy-ai.com/api/seera/test-result', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(results)
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to submit test results')
+        }
+
+        const data = await response.json()
+        console.log('Test results submitted successfully:', data)
+      } catch (error) {
+        console.error('Error submitting test results:', error)
+      }
     }
   
     if (stage === 'welcome') {
@@ -229,6 +329,97 @@ export default function Component() {
                     </span>
                   );
                 })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+  
+    if (stage === 'complete' && testResult) {
+      return (
+        <div 
+          className="min-h-screen bg-gradient-to-b from-purple-100 to-white dark:from-purple-950 dark:to-gray-950"
+          style={{
+            background: "linear-gradient(to bottom, rgba(255, 255, 255, 0.8), #FFFFFF 60%), conic-gradient(from 179.42deg at 47.87% -110.87%, #FFF -25.84deg, #7001D3 0.27deg, #FFF 23.53deg, #FFF 127.5deg, #FFF 196.87deg, #FFF 334.16deg, #7001D3 360.27deg)",
+            backgroundBlendMode: "multiply"
+          }}
+        >
+          <div className="max-w-5xl mx-auto p-8">
+            <div className="flex justify-between items-center">
+              <div className="absolute left-20 mt-2">
+                <Image
+                  src="/logo.png"
+                  alt="Logo"
+                  width={48}
+                  height={48}
+                  className="rounded-xl"
+                />
+              </div>
+            </div>
+
+            <div className="text-center">
+              <Image
+                src="/aiphoto.png"
+                alt="Complete"
+                width={240}
+                height={240}
+                className="mx-auto mb-12 mt-16 drop-shadow-2xl"
+              />
+              <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
+                Great Job! Here are your results:
+              </h1>
+              <div className="grid grid-cols-2 gap-8 mb-8">
+                <div className="p-6 bg-white/90 dark:bg-gray-900/90 rounded-lg shadow-xl">
+                  <h2 className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                    Words per Minute
+                  </h2>
+                  <p className="text-4xl font-bold">{testResult.wordsPerMinute}</p>
+                </div>
+                <div className="p-6 bg-white/90 dark:bg-gray-900/90 rounded-lg shadow-xl">
+                  <h2 className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                    Accuracy
+                  </h2>
+                  <p className="text-4xl font-bold">{testResult.accuracy}%</p>
+                </div>
+                <div className="p-6 bg-white/90 dark:bg-gray-900/90 rounded-lg shadow-xl">
+                  <h2 className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                    Keystrokes per Minute
+                  </h2>
+                  <p className="text-4xl font-bold">{testResult.keyStrokesPerMinute}</p>
+                </div>
+                <div className="p-6 bg-white/90 dark:bg-gray-900/90 rounded-lg shadow-xl">
+                  <h2 className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                    Wrong Letters
+                  </h2>
+                  <p className="text-4xl font-bold">{testResult.countOfWrongLetters}</p>
+                </div>
+              </div>
+              <div className="flex justify-center space-x-8 mb-12">
+                <Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200">
+                  Contact Us
+                </Link>
+                <Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200">
+                  Privacy Policy
+                </Link>
+                <Link href="#" className="text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200">
+                  Terms of Service
+                </Link>
+              </div>
+              
+              <div className="flex justify-center space-x-6">
+                <Link href="#" className="text-gray-400 dark:text-gray-500 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200">
+                  <GithubIcon className="w-7 h-7" />
+                </Link>
+                <Link href="#" className="text-gray-400 dark:text-gray-500 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200">
+                  <MailIcon className="w-6 h-6" />
+                </Link>
+                <Link href="#" className="text-gray-400 dark:text-gray-500 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200">
+                  <FacebookIcon className="w-6 h-6" />
+                </Link>
+                <Link href="#" className="text-gray-400 dark:text-gray-500 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200">
+                  <YoutubeIcon className="w-6 h-6" />
+                </Link>
               </div>
             </div>
           </div>
