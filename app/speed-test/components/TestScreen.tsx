@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import Image from 'next/image'
 import { Input } from '@/app/components/ui/input';
 import { Button } from '@/app/components/ui/button';
+
 interface TestScreenProps {
   timeLeft: number;
   text: string;
@@ -20,6 +21,12 @@ export function TestScreen({
   onCopy 
 }: TestScreenProps) {
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const handleBoxClick = () => {
+    if (inputRef.current) {
+      inputRef.current.focus()
+    }
+  }
 
   return (
     <div className="min-h-screen dark:bg-black">
@@ -58,14 +65,17 @@ export function TestScreen({
             <span className="text-2xl ml-1">Sec</span>
           </div>
 
-          <div className="relative mt-8">
+          <div 
+            className="relative mt-8 cursor-text" 
+            onClick={handleBoxClick}
+          >
             <Input
               ref={inputRef}
               value={text}
               onChange={onType}
               onPaste={onPaste}
               onCopy={onCopy}
-              className="w-full p-6 text-lg bg-transparent rounded-lg absolute inset-0 opacity-0 dark:text-white focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400"
+              className="w-full p-6 text-lg bg-transparent rounded-lg absolute inset-0 opacity-0 dark:text-white focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 z-10"
               autoFocus
             />
             <div className="p-8 rounded-lg border border-purple-200 dark:border-purple-800 bg-white/50 dark:bg-black/50 backdrop-blur-sm shadow-xl dark:shadow-purple-900/20">
