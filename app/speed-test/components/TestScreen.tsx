@@ -1,6 +1,5 @@
 import { useRef } from 'react'
 import Image from 'next/image'
-import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 interface TestScreenProps {
   timeLeft: number;
@@ -22,7 +21,7 @@ export function TestScreen({
   const inputRef = useRef<HTMLInputElement>(null)
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-b from-purple-100 to-white dark:from-purple-900/20 dark:to-gray-900">
       <div className="max-w-5xl mx-auto p-8">
         <div className="flex justify-between items-center">
           <div className="absolute left-20 mt-2">
@@ -35,20 +34,18 @@ export function TestScreen({
             />
           </div>
           <div className="absolute right-20">
-            <Button variant="outline" className="text-purple-600">
-              Contact Us
-            </Button>
+            <div className="text-6xl font-bold text-purple-600">
+              {String(Math.floor(timeLeft / 60)).padStart(2, '0')}:
+              {String(timeLeft % 60).padStart(2, '0')}
+              <span className="text-2xl ml-2">sec</span>
+            </div>
           </div>
         </div>
 
         <div className="text-center mt-24 mb-12">
-          <p className="text-gray-700 dark:text-gray-300 text-lg">You will start your writing speed test now,</p>
-          <p className="text-gray-700 dark:text-gray-300 text-lg mb-4">click start once you are ready</p>
-          <div className="text-6xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 bg-clip-text text-transparent my-6">
-            {String(Math.floor(timeLeft / 60)).padStart(2, '0')}:
-            {String(timeLeft % 60).padStart(2, '0')}
-            <span className="text-2xl ml-1">Sec</span>
-          </div>
+          <p className="text-gray-600 dark:text-gray-300 mb-8">
+            Start typing to begin the test
+          </p>
         </div>
 
         <div className="relative">
@@ -72,9 +69,9 @@ export function TestScreen({
                   className={
                     isTyped
                       ? isCorrect
-                        ? 'text-green-600 dark:text-green-400' 
-                        : 'text-red-600 dark:text-red-400'     
-                      : 'text-gray-400 dark:text-gray-600'     
+                        ? 'text-green-600 dark:text-green-400 transition-colors duration-200' 
+                        : 'text-red-600 dark:text-red-400 border-b-2 border-red-500 dark:border-red-400 transition-colors duration-200'
+                      : 'text-gray-400 dark:text-gray-500 transition-colors duration-200'
                   }
                 >
                   {char}

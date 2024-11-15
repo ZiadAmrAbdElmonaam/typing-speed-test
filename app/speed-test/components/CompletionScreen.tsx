@@ -1,53 +1,40 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { TestResult } from '../types'
+import { Button } from '@/app/components/ui/button';
 
 interface CompletionScreenProps {
   testResult: TestResult;
 }
 
-export function CompletionScreen({ }: CompletionScreenProps) {
+export function CompletionScreen({  }: CompletionScreenProps) {
   return (
     <div 
-      className="min-h-screen"
-      style={{
-        background: "linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 50%, #FCE7F3 100%)"
-      }}
+      className="min-h-screen bg-gradient-to-b from-purple-100 to-white dark:from-purple-900/20 dark:to-gray-900"
     >
       <div className="max-w-5xl mx-auto p-8">
-        {/* Logo */}
-        <div className="fixed left-8 top-8">
-          <Image
-            src="/logo.png"
-            alt="Logo"
-            width={48}
-            height={48}
-            className="rounded-xl"
-          />
+        <div className="flex justify-between items-center mb-8 mt-10">
+          <div className="absolute left-20 mt-2">
+            <Image src="/logo.png" alt="Logo" width={48} height={48} className="rounded-xl" />
+          </div>
+          <div className="absolute right-20">
+            <Button 
+              variant="outline"
+              className="text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+              style={{
+                border: "2px solid transparent",
+                color: "#6a1b9a",
+                borderRadius: "8px",
+              }}
+            >
+              Contact Us
+            </Button>
+          </div>
         </div>
 
-        {/* Main Content */}
         <div className="text-center mt-16">
-          <div className="relative">
-            <Image
-              src="/aiphoto.png"
-              alt="Complete"
-              width={200}
-              height={200}
-              className="mx-auto mb-8"
-            />
-            {/* Confetti effect around the image */}
-            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -z-10">
-              <Image
-                src="/confetti.png"
-                alt="confetti"
-                width={300}
-                height={300}
-              />
-            </div>
-          </div>
-
-          <h1 className="text-4xl font-bold mb-4 text-gray-900">
+          <Image src="/aiphoto.png" alt="Complete" width={200} height={200} className="mx-auto mb-8" />
+          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-purple-500 bg-clip-text text-transparent">
             Great Job! You&apos;ve Finished the Test!
           </h1>
           <p className="text-gray-600 mb-2">
