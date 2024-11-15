@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { WelcomeScreen } from './components/WelcomeScreen'
+import { StartTestScreen } from './components/StartTestScreen'
 import { TestScreen } from './components/TestScreen'
 import { CompletionScreen } from './components/CompletionScreen'
 import { TypingTest, TestResult } from './types'
@@ -9,7 +10,7 @@ import { API_ENDPOINTS } from '../config/api'
 import { calculateWPM } from './utils'
 
 export default function SpeedTest() {
-  const [stage, setStage] = useState<'welcome' | 'test' | 'complete'>('welcome')
+  const [stage, setStage] = useState<'welcome' | 'start' | 'test' | 'complete'>('welcome')
   const [timeLeft, setTimeLeft] = useState(60)
   const [text, setText] = useState('')
   const [sampleText, setSampleText] = useState('')
@@ -116,7 +117,11 @@ export default function SpeedTest() {
     return () => clearInterval(timerRef.current);
   }, [stage]);
 
-  const handleStart = () => {
+  const handleWelcomeComplete = () => {
+    setStage('start')
+  }
+
+  const handleStartTest = () => {
     setStage('test')
   }
 
@@ -185,7 +190,14 @@ export default function SpeedTest() {
   }
 
   if (stage === 'welcome') {
-    return <WelcomeScreen onStart={handleStart} />
+    return <WelcomeScreen onStart={handleWelcomeComplete} />
+  }
+
+  if (stage === 'start') {
+    return <StartTestScreen 
+      timeInSeconds={initialTestTime} 
+      onStartTest={handleStartTest} 
+    />
   }
 
   if (stage === 'test') {
