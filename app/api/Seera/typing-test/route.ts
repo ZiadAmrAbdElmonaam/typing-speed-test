@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const body = await request.json()
 
     const payload: TypingTestRequest = {
-      paragraph: body.paragraph || "This is a sample paragraph for typing speed test.",
+      paragraph: body.paragraph || "Sample test paragraph.",
       level: body.level || 2,
       testTime: body.testTime || 6.00,
       companyId: body.companyId || 2,
@@ -52,6 +52,7 @@ export async function POST(request: Request) {
 export async function GET() {
   try {
     const response = await fetch('https://demo.nancy-ai.com/api/seera/typing-test')
+    console.log('Response:', response)
     const data = await response.json()
     return NextResponse.json(data)
   } catch (error) {
