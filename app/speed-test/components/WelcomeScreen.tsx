@@ -4,9 +4,10 @@ import { Button } from '@/app/components/ui/button';
 
 interface WelcomeScreenProps {
   onStart: () => void;
+  onContact: () => void;
 }
 
-export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
+export function WelcomeScreen({ onStart, onContact }: WelcomeScreenProps) {
   return (
     <div 
       style={{
@@ -29,6 +30,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           <div className="absolute right-20">
             <Button 
               variant="outline" 
+              onClick={onContact}
               className="text-purple-600 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20 dark:border-purple-800"
             >
               Contact Us

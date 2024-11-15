@@ -10,6 +10,7 @@ interface TestScreenProps {
   onType: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPaste: (e: React.ClipboardEvent) => void;
   onCopy: (e: React.ClipboardEvent) => void;
+  onContact: () => void;
 }
 
 export function TestScreen({ 
@@ -18,7 +19,8 @@ export function TestScreen({
   sampleText, 
   onType, 
   onPaste, 
-  onCopy 
+  onCopy,
+  onContact 
 }: TestScreenProps) {
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -49,6 +51,7 @@ export function TestScreen({
           <div className="absolute right-20">
             <Button
               variant="outline"
+              onClick={onContact}
               className="text-purple-600 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20 dark:border-purple-800"
             >
               Contact Us

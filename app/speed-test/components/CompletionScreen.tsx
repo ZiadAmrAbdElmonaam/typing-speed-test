@@ -66,7 +66,7 @@ export function CompletionScreen({  onContact }: CompletionScreenProps) {
             </div>
           </div>
 
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold mb-4 text-black dark:text-white">
             Great Job! You&apos;ve Finished the Test!
           </h1>
           <p className="text-gray-600 dark:text-gray-300 mb-2">

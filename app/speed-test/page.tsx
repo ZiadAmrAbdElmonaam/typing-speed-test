@@ -200,13 +200,14 @@ export default function SpeedTest() {
     setStage(previousStage)
   }
   if (stage === 'welcome') {
-    return <WelcomeScreen onStart={handleWelcomeComplete} />
+    return <WelcomeScreen onStart={handleWelcomeComplete} onContact={handleContact} />
   }
 
   if (stage === 'start') {
     return <StartTestScreen
       timeInSeconds={initialTestTime} 
       onStartTest={handleStartTest}
+      onContact={handleContact}
     />
   }
 
@@ -219,6 +220,7 @@ export default function SpeedTest() {
         onType={handleType}
         onPaste={handlePaste}
         onCopy={handleCopy}
+        onContact={handleContact}
       />
     )
   }

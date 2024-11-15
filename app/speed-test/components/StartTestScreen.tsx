@@ -4,9 +4,10 @@ import { Button } from '@/app/components/ui/button';
 interface StartTestScreenProps {
   timeInSeconds: number;
   onStartTest: () => void;
+  onContact: () => void;
 }
 
-export function StartTestScreen({ timeInSeconds, onStartTest }: StartTestScreenProps) {
+export function StartTestScreen({ timeInSeconds, onStartTest, onContact }: StartTestScreenProps) {
   const minutes = Math.floor(timeInSeconds / 60);
   const seconds = timeInSeconds % 60;
 
@@ -32,6 +33,7 @@ export function StartTestScreen({ timeInSeconds, onStartTest }: StartTestScreenP
           <div className="absolute right-20">
             <Button
               variant="outline"
+              onClick={onContact}
               className="text-purple-600 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20 dark:border-purple-800"
             >
               Contact Us
