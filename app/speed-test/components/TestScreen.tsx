@@ -29,7 +29,12 @@ export function TestScreen({
   }
 
   return (
-    <div className="min-h-screen dark:bg-black">
+    <div 
+      style={{
+        background: "linear-gradient(to bottom, rgba(255, 255, 255, 0.8), #FFFFFF 60%), conic-gradient(from 179.42deg at 47.87% -110.87%, #FFF -25.84deg, #7001D3 0.27deg, #FFF 23.53deg, #FFF 127.5deg, #FFF 196.87deg, #FFF 334.16deg, #7001D3 360.27deg)"
+      }}
+      className="min-h-screen dark:bg-black"
+    >
       <div className="max-w-5xl mx-auto p-8">
         <div className="flex justify-between items-center">
           <div className="absolute left-20 mt-2">
