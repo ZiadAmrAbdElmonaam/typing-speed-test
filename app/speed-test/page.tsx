@@ -5,17 +5,19 @@ import { WelcomeScreen } from './components/WelcomeScreen'
 import { StartTestScreen } from './components/StartTestScreen'
 import { TestScreen } from './components/TestScreen'
 import { CompletionScreen } from './components/CompletionScreen'
+import { ContactScreen } from './components/ContactScreen'
 import { TypingTest, TestResult } from './types'
 import { API_ENDPOINTS } from '../config/api'
 import { calculateWPM } from './utils'
 
 export default function SpeedTest() {
-  const [stage, setStage] = useState<'welcome' | 'start' | 'test' | 'complete'>('welcome')
+  const [stage, setStage] = useState<'welcome' | 'start' | 'test' | 'complete' | 'contact'>('welcome')
   const [timeLeft, setTimeLeft] = useState(60)
   const [text, setText] = useState('')
   const [sampleText, setSampleText] = useState('')
   const [testResult, setTestResult] = useState<TestResult | null>(null)
   const [initialTestTime, setInitialTestTime] = useState(60)
+  const [previousStage, setPreviousStage] = useState<'welcome' | 'start' | 'test' | 'complete'>('welcome')
   const timerRef = useRef<NodeJS.Timeout>()
 
   const calculateTestResults = useCallback(() => {
@@ -189,14 +191,22 @@ export default function SpeedTest() {
     }
   }
 
+  const handleContact = () => {
+    setPreviousStage(stage as 'welcome' | 'start' | 'test' | 'complete')
+    setStage('contact')
+  }
+
+  const handleBack = () => {
+    setStage(previousStage)
+  }
   if (stage === 'welcome') {
     return <WelcomeScreen onStart={handleWelcomeComplete} />
   }
 
   if (stage === 'start') {
-    return <StartTestScreen 
+    return <StartTestScreen
       timeInSeconds={initialTestTime} 
-      onStartTest={handleStartTest} 
+      onStartTest={handleStartTest}
     />
   }
 
@@ -213,8 +223,12 @@ export default function SpeedTest() {
     )
   }
 
+  if (stage === 'contact') {
+    return <ContactScreen onBack={handleBack} />
+  }
+
   if (stage === 'complete' && testResult) {
-    return <CompletionScreen testResult={testResult} />
+    return <CompletionScreen testResult={testResult} onContact={handleContact} />
   }
 
   return null
