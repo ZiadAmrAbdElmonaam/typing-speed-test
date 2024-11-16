@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Input } from '@/app/components/ui/input';
 import { Button } from '@/app/components/ui/button';
@@ -24,10 +24,16 @@ export function TestScreen({
 }: TestScreenProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleBoxClick = () => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+  // Keep focus on input
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const handleContainerClick = (e: React.MouseEvent) => {
+    // Prevent default behavior
+    e.preventDefault();
+    // Refocus the input
+    inputRef.current?.focus();
   };
 
   return (
@@ -36,7 +42,8 @@ export function TestScreen({
         background:
           "linear-gradient(to bottom, rgba(255, 255, 255, 0.8), #FFFFFF 60%), conic-gradient(from 179.42deg at 47.87% -110.87%, #FFF -25.84deg, #7001D3 0.27deg, #FFF 23.53deg, #FFF 127.5deg, #FFF 196.87deg, #FFF 334.16deg, #7001D3 360.27deg)",
       }}
-      className="min-h-screen bg-white dark:bg-black"
+      className="min-h-screen bg-white dark:bg-black select-none"
+      onClick={handleContainerClick}
     >
       <div className="max-w-5xl mx-auto p-8">
         <div className="flex justify-between items-center">
@@ -74,43 +81,66 @@ export function TestScreen({
             <span className="text-2xl ml-1">Sec</span>
           </div>
 
-          <div
-            className="relative mt-8 cursor-text"
-            onClick={handleBoxClick}
+          {/* Writing Area */}
+          <div 
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{
+              width: '947px',
+              height: '476px',
+            }}
           >
-            <Input
-              ref={inputRef}
-              value={text}
-              onChange={onType}
-              onPaste={onPaste}
-              onCopy={onCopy}
-              className="w-full p-6 text-lg bg-transparent rounded-lg absolute inset-0 opacity-0 dark:text-white focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 z-10"
-              autoFocus
-            />
-            <div className="p-8 rounded-lg border border-purple-200 dark:border-purple-600 bg-white/70 dark:bg-gray-800 backdrop-blur-sm shadow-xl dark:shadow-purple-900/20">
-              {sampleText.split('').map((char, index) => {
-                const isTyped = index < text.length;
-                const isCorrect = text[index] === char;
+            <div className="flex flex-col justify-center items-center gap-6">
+              {/* Hidden Input for Typing */}
+              <Input
+                ref={inputRef}
+                value={text}
+                onChange={onType}
+                onPaste={onPaste}
+                onCopy={onCopy}
+                className="sr-only"
+                autoFocus
+              />
+              
+              {/* Sample Text Display */}
+              <div 
+                className="w-full h-[476px] p-8 rounded-lg border border-purple-200 
+                  dark:border-purple-600 bg-white/70 dark:bg-gray-800 
+                  backdrop-blur-sm shadow-xl dark:shadow-purple-900/20 
+                  select-none overflow-y-auto"
+                onMouseDown={(e) => e.preventDefault()}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '24px'
+                }}
+              >
+                <div className="w-full text-left">
+                  {sampleText.split('').map((char, index) => {
+                    const isTyped = index < text.length;
+                    const isCorrect = text[index] === char;
 
-                return (
-                  <span
-                    key={index}
-                    className={
-                      isTyped
-                        ? isCorrect
-                          ? 'text-green-600 dark:text-green-400'
-                          : 'text-red-600 dark:text-red-400'
-                        : 'text-gray-500 dark:text-gray-400'
-                    }
-                  >
-                    {char}
-                  </span>
-                );
-              })}
+                    return (
+                      <span
+                        key={index}
+                        className={`text-lg ${
+                          isTyped
+                            ? isCorrect
+                              ? 'text-green-600 dark:text-green-400'
+                              : 'text-red-600 dark:text-red-400'
+                            : 'text-gray-500 dark:text-gray-400'
+                        }`}
+                      >
+                        {char}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
 
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-8">
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-8 relative z-20">
             Your response will be saved automatically when time is up
           </p>
         </div>

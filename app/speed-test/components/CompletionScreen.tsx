@@ -11,7 +11,7 @@ interface CompletionScreenProps {
 export function CompletionScreen({  onContact }: CompletionScreenProps) {
   return (
     <div 
-      className="min-h-screen dark:bg-black"
+      className="min-h-screen dark:bg-black relative"
       style={{
         background: "linear-gradient(to bottom, rgba(255, 255, 255, 0.8), #FFFFFF 60%), conic-gradient(from 179.42deg at 47.87% -110.87%, #FFF -25.84deg, #7001D3 0.27deg, #FFF 23.53deg, #FFF 127.5deg, #FFF 196.87deg, #FFF 334.16deg, #7001D3 360.27deg)",
       }}
@@ -72,80 +72,95 @@ export function CompletionScreen({  onContact }: CompletionScreenProps) {
           <p className="text-gray-600 dark:text-gray-300 mb-2">
             Thank you for completing the speed writing test! We appreciate the time and effort you put into it.
           </p>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mb-16">
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
             Your results will be sent to your email within 24 hours. Keep an eye on your inbox for further details.
           </p>
+        </div>
+      </div>
 
+      {/* New Footer Section */}
+      <div className="absolute bottom-0 left-0 right-0 p-8">
+        <div className="max-w-full mx-auto px-20">
           {/* Footer Links */}
-          <div className="flex justify-center space-x-8 mb-8">
-            <button 
-              onClick={onContact}
-              className="text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 transition-colors duration-200"
-            >
-              Contact Us
-            </button>
-            <Link 
-              href="#" 
-              className="text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 transition-colors duration-200"
-            >
-              Privacy Policy
-            </Link>
-            <Link 
-              href="#" 
-              className="text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 transition-colors duration-200"
-            >
-              Terms of Service
-            </Link>
-          </div>
+          <div className="flex justify-between items-center">
+            <div className="flex space-x-8">
+              <button 
+                onClick={onContact}
+                className="text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 transition-colors duration-200"
+              >
+                Contact Us
+              </button>
+              <Link 
+                href="#" 
+                className="text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 transition-colors duration-200"
+              >
+                Privacy Policy
+              </Link>
+              <Link 
+                href="#" 
+                className="text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 transition-colors duration-200"
+              >
+                Terms of Service
+              </Link>
+            </div>
 
-          {/* Social Media Icons */}
-          <div className="flex justify-center space-x-6">
-            <Link 
-              href="https://www.linkedin.com/company/nancy-ai" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-400 hover:text-purple-600 transition-colors duration-200"
-            >
-              <Image 
-                src="/linkedin.svg" 
-                alt="LinkedIn" 
-                width={24} 
-                height={24} 
-                className="dark:opacity-75 hover:opacity-100 transition-opacity duration-200" 
-              />
-            </Link>
-            <Link 
-              href="https://www.facebook.com/nncyai"
-              target="_blank"
-              rel="noopener noreferrer" 
-              className="text-gray-400 hover:text-purple-600 transition-colors duration-200"
-            >
-              <Image 
-                src="/facebook.svg" 
-                alt="Facebook" 
-                width={24} 
-                height={24} 
-                className="dark:opacity-75 hover:opacity-100 transition-opacity duration-200" 
-              />
-            </Link>
-            <Link href="#" className="text-gray-400 hover:text-purple-600 transition-colors duration-200">
-              <Image 
-                src="/instagram.svg" 
-                alt="Instagram" 
-                width={24} 
-                height={24} 
-                className="dark:opacity-75 hover:opacity-100 transition-opacity duration-200" 
-              />
-            </Link>
-            <Link href="#" className="text-gray-400 hover:text-purple-600 transition-colors duration-200">
-              <Image 
-                src="/twitter.svg" 
-                alt="Twitter" 
-                width={24} 
-                height={24} 
-                className="dark:opacity-75 hover:opacity-100 transition-opacity duration-200" 
-              />
-            </Link>
+            {/* Social Media Icons - positioned at the far right */}
+            <div className="flex space-x-6 absolute right-20">
+              <Link 
+                href="https://www.linkedin.com/company/nancy-ai" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-purple-600 transition-colors duration-200"
+              >
+                <Image 
+                  src="/linkedin.svg" 
+                  alt="LinkedIn" 
+                  width={24} 
+                  height={24} 
+                  className="dark:opacity-75 hover:opacity-100 transition-opacity duration-200" 
+                />
+              </Link>
+              <Link 
+                href="https://www.instagram.com"
+                target="_blank"
+                rel="noopener noreferrer" 
+                className="text-gray-400 hover:text-purple-600 transition-colors duration-200"
+              >
+                <Image 
+                  src="/instagram.svg" 
+                  alt="Instagram" 
+                  width={24} 
+                  height={24} 
+                  className="dark:opacity-75 hover:opacity-100 transition-opacity duration-200" 
+                />
+              </Link>
+              <Link 
+                href="https://www.facebook.com/nncyai"
+                target="_blank"
+                rel="noopener noreferrer" 
+                className="text-gray-400 hover:text-purple-600 transition-colors duration-200"
+              >
+                <Image 
+                  src="/facebook.svg" 
+                  alt="Facebook" 
+                  width={24} 
+                  height={24} 
+                  className="dark:opacity-75 hover:opacity-100 transition-opacity duration-200" 
+                />
+              </Link>
+              <Link 
+                href="#" 
+                className="text-gray-400 hover:text-purple-600 transition-colors duration-200"
+              >
+                <Image 
+                  src="/twitter.svg" 
+                  alt="Twitter" 
+                  width={24} 
+                  height={24} 
+                  className="dark:opacity-75 hover:opacity-100 transition-opacity duration-200" 
+                />
+              </Link>
+            </div>
           </div>
         </div>
       </div>
